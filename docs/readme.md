@@ -117,54 +117,136 @@ We bouwen het spel stap per stap op, volg de opgave...
 13. Je kan nu het spel spelen maar enkel de eerste speler van alle opgegeven spelers doet mee...
 14. Maak gebruik van het stukje code die je in commentaar in dobbelspel.js vindt. Dit stukje code moet uitgevoerd worden in de toHtml functie indien het spel geen winnaar heeft. Bekijk de code goed: er wordt gezorgd dat de knop (value en onclick event handler) zich aanpast en zo de correcte flow in de applicatie verzekert… Veel speelplezier!
 
+## Code javascript - Webapplicaties II
 
-## Oefening 2: OXO
+```
+class Dobbelsteen {
+  constructor() {
+    this._aantalOgen = 1;
+  }
+  get aantalOgen() {
+    return this._aantalOgen;
+  }
+  rol() {
+    this._aantalOgen = Math.floor(Math.random() * 6) + 1;
+  }
+}
 
-Vorm als eerste speler drie op een rij! Op een bord van 3x3 zetten twee spelers om beurt hun symbool (de ene speler speelt met het symbool X, de andere met symbool O. De winnaar is diegene die er als eerste erin slaagt om met zijn symbool een drie op een rij te vormen. Dit kan horizontaal, verticaal of diagonaal. Het spel kan ook eindigen in een gelijkspel. Dit gebeurt wanneer alle 9 vakjes van het bord een symbool bevatten, zonder dat er een drie op een rij is gevormd. De speler met symbool O mag het spel beginnen.
+class Speler {
+  constructor(naam) {
+    this._naam = naam;
+    this._score = 0;
+    this._dobbelstenen = [];
+    for (let index = 0; index < 5; index++) {
+      this._dobbelstenen.push(new Dobbelsteen());
+    }
+  }
+  get score() {
+    return this._score;
+  }
+  get naam() {
+    return this._naam;
+  }
+  get dobbelstenen() {
+    return this._dobbelstenen;
+  }
+  speel() {
+    for (const dobbelsteen of this._dobbelstenen) {
+      dobbelsteen.rol();
+      if (dobbelsteen.aantalOgen === 1) this._score += 100;
+      else if (dobbelsteen.aantalOgen === 5) this._score += 50;
+    }
+  }
+}
 
-![oxoSpelvoorbeelden.PNG](/docs/images/oxoSpelvoorbeelden.PNG 'Voorbeelden')
+class Spel {
+  constructor(spelers) {
+    this._spelers = spelers;
+    this._spelerAanZet = spelers[0];
+  }
+  get aantalSpelers() {
+    return this._spelers.length;
+  }
+  get spelerAanZet() {
+    return this._spelerAanZet;
+  }
+  get heeftWinnaar() {
+    for (const speler of this._spelers) {
+      if (speler.score >= 1000) return true;
+    }
+    return false;
+  }
+  get scoreOverzicht() {
+    let resultaat = '';
+    for (const speler of this._spelers) {
+      resultaat += `${speler.naam}: ${speler.score}\n`;
+    }
+    return resultaat;
+  }
+  speel() {
+    if (!this.heeftWinnaar) this._spelerAanZet.speel();
+  }
+  bepaalVolgendeSpeler() {
+    if (!this.heeftWinnaar) {
+      this._spelerAanZet = this._spelers[
+        (this._spelers.indexOf(this._spelerAanZet) + 1) % this.aantalSpelers
+      ];
+    }
+  }
+}
 
-De inhoud en opmaak zijn reeds voorzien in index.html en oxo.css. Er wordt gebruik gemaakt van drie afbeeldingen:  wit.png, x.png en o.png. Initieel start je met een leeg bord en bevatten alle img- elementen de afbeelding wit.png.
+function toHtml(spel) {
+  document.getElementById('speler').innerHTML = `Speler aan zet: ${
+    spel.spelerAanZet.naam
+  }`;
+  document.getElementById('score').innerHTML = `Score = ${
+    spel.spelerAanZet.score
+  }`;
+  for (let index = 0; index < spel.spelerAanZet.dobbelstenen.length; index++) {
+    document.getElementById(index + 1).src = `images/Dice${
+      spel.spelerAanZet.dobbelstenen[index].aantalOgen
+    }.png`;
+  }
+  if (spel.heeftWinnaar) {
+    alert(
+      `De winnaar is ${spel.spelerAanZet.naam}. Proficiat!\n${
+        spel.scoreOverzicht
+      }`
+    );
+  } else {
+    if (document.getElementById('play').value === 'Rol dobbelstenen') {
+      document.getElementById('play').value = 'Volgende speler';
+      document.getElementById('play').onclick = function() {
+        spel.bepaalVolgendeSpeler();
+        toHtml(spel);
+      };
+    } else {
+      document.getElementById('play').value = 'Rol dobbelstenen';
+      document.getElementById('play').onclick = function() {
+        spel.speel();
+        toHtml(spel);
+      };
+    }
+  }
+}
 
-![oxoStart.PNG](/docs/images/oxoStart.PNG 'Start')
+function init() {
+  const aantalSpelers = prompt('Met hoeveel spelers gaan we spelen?');
+  const spelers = [];
+  for (let index = 0; index < aantalSpelers; index++) {
+    spelers.push(new Speler(prompt(`Geef naam van speler ${index + 1}`)));
+  }
+  const spel = new Spel(spelers);
+  toHtml(spel);
+  document.getElementById('play').onclick = function() {
+    spel.speel();
+    toHtml(spel);
+  };
+  document.getElementById('scorebord').onclick = function() {
+    alert(spel.scoreOverzicht);
+  };
+}
 
-We gaan stap voor stap gedrag aan onze pagina toevoegen.
-1.	Maak in de map ‘OXO’ een submap genaamd js aan en maak hierin een bestand oxo.js aan.
-2.	Wijzig index.html zodat het script oxo.js geladen wordt wanneer de pagina in de browser geladen wordt.
-3.	Declareer in oxo.js een klasse Spelbord met volgende properties
-    -	_bord: in de constructor wordt een tweedimensionale array aangemaakt en aan _bord toegekend. Elk element van de array bevat null
-    - plaatsSymbool(symbool, rij, kol): een methode die het symbool op de juiste plaats op _bord plaatst
-4.	Declareer een init functie. In de functie doe je het volgende:
-    -	maak een nieuw spelbord aan
-    -	haal alle img- elementen op en stop deze in een array, dit kan je als volgt doen
-const imgElementen = document.getElementsByTagName('img');
-    -	overloop deze array en definieer de onclick event handler voor elk element:
-      1.	je roept de methode plaatsSymbool aan van spelbord; als argument voor de parameter symbool geef je ‘O’ door, de argumenten voor de rij en kol parameters zal je uit het id van het img-element moeten halen. Denk eraan dat arrays in JavaScript 0-based zijn en dat de id’s van de img-elementen 1-based zijn.
-      2.	stel het src-attribuut het img-element in op ‘images/O.png’
-5.	Stel de init functie in als event handler voor het load event van window
-6.	Je kan nu de index pagina laden in de browser en kan op een correcte manier (klik op vakje vult dat vakje met O), het bord volledig opvullen met het symbool O…
+window.onload = init;
 
-      ![oxoAlleenO.PNG](/docs/images/oxoAlleenO.PNG 'Start')
-7.	Declareer een klasse Spel.js met volgende properties
-    -	_spelbord: instantie van Spelbord, aan te maken in de constructor
-    -	_tePlaatsenSymbool, initieel ‘O’, voorzie een getter
-    -	_geplaatsteSymbool, initieel ‘X’, voorzie een getter
-    -	_winnaarsSymbool, initieel null, voorzie een getter
-    -	plaatsSymbool(rij, kol): methode die het te _plaatsenSymbool op rij, kolom zet op het spelbord en nadien _teplaatsenSymbool en _geplaatsteSymbool swapt. Zorg dat dit niet gebeurt indien het bewuste vak op het spelbord niet vrij is. Voeg hiertoe een methode isVrij(rij, kol) toe aan Spelbord.
-8.	Declareer een toHtml(spel) functie. In deze functie ga je de innerHTML van div-element met id message instellen: ‘Speler [s] is aan de beurt’ waarbij [s] het tePlaatsenSymbool is
-9.	Pas de init-functie aan 
-    -	instantieer een Spel ipv een Spelbord
-    -	zorg dat het img-element nu volgens het geplaatsteSymbool aangepast wordt (niet langer steeds een ‘O’)
-    -	roep de toHtml functie aan zodat er getoond wordt wie aan zet is.
-10.	Je kan nu de index pagina laden in de browser en het bord afwisselend met X en O opvullen. Je ziet steeds wie aan de beurt is
-
-      ![oxoIndex.PNG](/docs/images/oxoIndex.PNG 'Index')
-11.	Je kan nu de klasse Spelbord en Spel finaliseren.
-    -	Spelbord 
-      1.	voeg een methode bevatDrieOpEenrij(symbool, rij, kol) toe die retourneert of er al dan niet een drie op een rij wordt gevormd door het zetten van symbool op rij, kol
-      2.	voeg een methode isVolzet() toe die retourneert of het bord al dan niet volledig opgevuld is
-    -	Spel
-      1.	voeg een methode isEindeSpel() toe. Deze methode retourneert true als het bord volzet is of indien er een drie op een rij is gevormd
-      2.	pas de methode plaatsSymbool(…) aan. Er kan geen symbool geplaatst worden als het einde van het spel is bereikt. Als het einde van het spel wordt bereikt bij het plaatsen van een symbool dan wordt het winnaarsSymbool ingesteld
-12.	Pas de toHtml functie aan zodat afhankelijk van de toestand van het spel, de juiste message weergegeven wordt: volgende speler/gelijkspel/winnaar. Veel speelplezier!
-![oxoComplete.PNG](/docs/images/oxoComplete.PNG 'Complete')
+```
