@@ -172,14 +172,14 @@ class Spel {
   }
   get heeftWinnaar() {
     return (
-			this._spelers.filter((speler) => speler.score >= 1000).length > 0
-		);
+	this._spelers.filter((speler) => speler.score >= 1000).length > 0
+    );
   }
   get scoreOverzicht() {
     let resultaat = '';
     this._spelers.forEach((speler) => {
-			resultaat += `${speler.naam}: ${speler.score}\n`;
-		});
+	resultaat += `${speler.naam}: ${speler.score}\n`;
+    });
     return resultaat;
   }
   speel() {
