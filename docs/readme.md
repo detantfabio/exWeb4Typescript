@@ -151,7 +151,7 @@ class Speler {
     return this._dobbelstenen;
   }
   speel() {
-    for (const dobbelsteen of this._dobbelstenen) {
+    this._dobbelstenen.forEach(dobbelsteen => {
       dobbelsteen.rol();
       if (dobbelsteen.aantalOgen === 1) this._score += 100;
       else if (dobbelsteen.aantalOgen === 5) this._score += 50;
@@ -171,16 +171,15 @@ class Spel {
     return this._spelerAanZet;
   }
   get heeftWinnaar() {
-    for (const speler of this._spelers) {
-      if (speler.score >= 1000) return true;
-    }
-    return false;
+    return (
+			this._spelers.filter((speler) => speler.score >= 1000).length > 0
+		);
   }
   get scoreOverzicht() {
     let resultaat = '';
-    for (const speler of this._spelers) {
-      resultaat += `${speler.naam}: ${speler.score}\n`;
-    }
+    this._spelers.forEach((speler) => {
+			resultaat += `${speler.naam}: ${speler.score}\n`;
+		});
     return resultaat;
   }
   speel() {
@@ -202,6 +201,7 @@ function toHtml(spel) {
   document.getElementById('score').innerHTML = `Score = ${
     spel.spelerAanZet.score
   }`;
+  
   for (let index = 0; index < spel.spelerAanZet.dobbelstenen.length; index++) {
     document.getElementById(index + 1).src = `images/Dice${
       spel.spelerAanZet.dobbelstenen[index].aantalOgen
