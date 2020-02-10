@@ -8,7 +8,7 @@ Open Visual Studio Code en open de folder met de gekloonde oefening.
 Installeer de extension ESLint. Meer inormatie vind je op https://eslint.org/.     
 Installeer Typescript Compiler. Open terminal in VSC en geef volgend commendo in: _npm install -g typescript_.      
 Geef vervolgens het volgende commando in om de typescript configuration file (_tsconfig.json_) aan te maken: _tsc --init_.        
-We zullen eerst een HelloWorl script maken. Maak in de folder _script_ het volgende bestand aan _HelloWorl.ts_ met volgende code:
+We zullen eerst een HelloWorld script maken. Maak in de folder _script_ het volgende bestand aan _HelloWorl.ts_ met volgende code:
 ```
 let message: string = 'Hello World';
 console.log(message);
@@ -17,7 +17,7 @@ Nadat je de code hebt geschreven kan je een task aanmaken via de menu Terminal:
 
 ![Terminal.PNG](/docs/images/Terminal.PNG)    
 Om de task te runnen, ga je weer via menu Terminal en kies je voor _Run Task_. Je typescript wordt gecompileerd naar javascript en geeft eventueel errors. Los deze eerst op en Run de Task opnieuw.     
-Om je script te runnen geef je in de terminal node HelloWorl.js in.
+Om je script te runnen geef je in de terminal _node HelloWorl.js_ in.
 
 
 ## De oefening: Afrikaans dobbelen
@@ -155,7 +155,7 @@ class Speler {
       dobbelsteen.rol();
       if (dobbelsteen.aantalOgen === 1) this._score += 100;
       else if (dobbelsteen.aantalOgen === 5) this._score += 50;
-    }
+    )}
   }
 }
 
