@@ -5,7 +5,7 @@
 Clone de oefening (https://github.com/stefaandc/exWeb4Typescript).
 
 Open Visual Studio Code en open de folder met de gekloonde oefening.    
-Installeer de extension ESLint. Meer inormatie vind je op https://eslint.org/.     
+Installeer de extension ESLint. Meer informatie vind je op https://eslint.org/.     
 Installeer Typescript Compiler. Open terminal in VSC en geef volgend commendo in: _npm install -g typescript_.      
 Geef vervolgens het volgende commando in om de typescript configuration file (_tsconfig.json_) aan te maken: _tsc --init_.        
 We zullen eerst een HelloWorld script maken. Maak in de folder _script_ het volgende bestand aan _HelloWorl.ts_ met volgende code:
